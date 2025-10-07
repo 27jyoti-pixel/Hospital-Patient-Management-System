@@ -1,0 +1,105 @@
+class Patient:
+    def __init__(self, patient_id, name, age, problem, severity=0):
+        self.id = patient_id
+        self.name = name
+        self.age = age
+        self.problem = problem
+        self.severity = severity  # higher = more severe
+
+    def __str__(self):
+        return f"[ID:{self.id}] {self.name}, Age:{self.age}, Problem:{self.problem}, Severity:{self.severity}"
+
+
+# Simple Queue (FIFO)
+class Queue: 
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        self.items.append(item)
+
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.pop(0)
+        return None
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def display(self):
+        if self.is_empty():
+            print("None")
+        else:
+            for item in self.items:
+                print(item)
+
+
+# Priority Queue (based on severity)
+class PriorityQueue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        self.items.append(item)
+        # Sort by severity descending
+        self.items.sort(key=lambda x: x.severity, reverse=True)
+
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.pop(0)
+        return None
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def display(self):
+        if self.is_empty():
+            print("None")
+        else:
+            for item in self.items:
+                print(item)
+
+
+class Hospital:
+    def __init__(self):
+        self.normal_queue = Queue()
+        self.emergency_queue = PriorityQueue()
+
+    def add_patient(self, patient):
+        if patient.severity > 0:
+            self.emergency_queue.enqueue(patient)
+            print(f"Emergency patient added: {patient.name}")
+        else:
+            self.normal_queue.enqueue(patient)
+            print(f"Normal patient added: {patient.name}")
+
+    def attend_patient(self):
+        if not self.emergency_queue.is_empty():
+            p = self.emergency_queue.dequeue()
+            print(f"Attending emergency patient: {p.name}")
+        elif not self.normal_queue.is_empty():
+            p = self.normal_queue.dequeue()
+            print(f"Attending normal patient: {p.name}")
+        else:
+            print("No patients waiting.")
+
+    def display_patients(self):
+        print("\n--- Emergency Patients ---")
+        self.emergency_queue.display()
+        print("\n--- Normal Patients ---")
+        self.normal_queue.display()
+        print("---------------------------")
+
+
+# Example run
+if __name__ == "__main__":
+    h = Hospital()
+    h.add_patient(Patient(1, "Aarav", 30, "Fever"))
+    h.add_patient(Patient(2, "Riya", 45, "Accident", severity=5))
+    h.add_patient(Patient(3, "Karan", 60, "Headache"))
+    h.add_patient(Patient(4, "Meera", 55, "Heart Issue", severity=8))
+
+    h.display_patients()
+    h.attend_patient()
+    h.attend_patient()
+    h.display_patients()
